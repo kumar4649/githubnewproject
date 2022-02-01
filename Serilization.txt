@@ -1,0 +1,773 @@
+1.what is Serilization?
+===========
+Serialization is process of converting object into byte stream. 
+or 
+The process of writting or saving an stage of an object.
+
+  Serialized object (byte stream) can be:
+ >Transferred over network.
+ >Persisted/saved into file.
+ >Persisted/saved into database.
+Once, object have have been transferred over network or persisted in file or in database
+
+
+--->By using FileOutputStream and ObjectOutputStream classes we can achieve
+serialization process.
+ex
+--
+oos.writeObject(p);
+
+2.Question 2. How do we Serialize object, write a program to serialize and deSerialize object and persist it in file (Important)?
+=============================================
+ In order to serialize object our class needs to implement java.io.Serializable interface. Serializable interface is Marker interface 
+ i.e. it does not have any methods of its own, but it tells Jvm that object has to converted into byte stream.
+
+
+ SERIALIZATION>
+==========
+Create object of ObjectOutput and give it’s reference variable name oout and call writeObject() method and pass our employee object as parameter [oout.writeObject(object1) ]
+
+
+FileOutputStream fout = new FileOutputStream("ser.txt");
+ObjectOutput oout = new ObjectOutputStream(fout);
+System.out.println("Serialization process has started, serializing employee objects...");
+oout.writeObject(object1);
+
+
+
+what is the purpose of the DDe-Serialization? 
+=======================
+which means reconverting the serialized byte stream to an object again.
+
+The process of  to reading state of an object from a file is called DeSerialization
+2. but strictly speaking it is the process of converting an object from file supported
+form (or) network supported form to java supported form.
+3. By using FileInputStream and ObjectInputStream classes we can achieve
+DeSerialization.
+
+
+FileInputStream fins=new FailInputStream("scr.txt");
+ObjectInputStream oins=new ObjectInputStream(fins);
+
+Employee employee=new Employe();
+ oins.readObject();
+
+
+
+
+
+We can add any no. Of objects to the file and we can read all those objects from
+the file but in which order we wrote objects in the same order only the objects
+will come back. That is order is important.
+5. If we are trying to serialize a non-serializable object then we will get
+RuntimeException saying "NotSerializableException
+
+
+What is the purpose of the Transient Keyworkd ?
+=================================================
+transient is the modifier applicable only for variables.
+While performing serialization if we don't want to save the data in the particular field then make that filed as transient keyword.
+And transient is an modifier .
+
+what is the differnece between the static and transient ?
+static variable is not part of object state hence they won't participate 
+in serialization because of this declaring a static variable as transient there is no use.
+
+Transient Vs Final?
+========================
+final variables will be participated into serialization directly by their values. Hence declaring a final variable as transient there is no use.
+//the compiler assign the value to final variable
+
+
+Why we need to go for Custom Serilizaction ?
+==============================================
+https://www.javamadesoeasy.com/2015/02/customize-serialization-process-by.html
+
+We can implements customized serialization by using the following two methods.
+
+private void writeObject(ObjectOutputStream os) throws Exception.
+
+This method will be executed automatically by jvm at the time of serialization.
+It is a callback method. Hence at the time of serialization if we want to perform any extra work we have to define that in this method only.
+(prepare encrypted password and write encrypted password seperate to the file )
+private void readObject(ObjectInputStream is) throws Exception.
+
+This method will be executed automatically by JVM at the time of Deserialization. Hence at the time of Deserialization if we want to perform any extra activity we have to define that in this method only.
+(read encrypted password , perform decryption and assign decrypted password to the current object password variable )
+
+https://www.javatpoint.com/serialization-in-java
+https://www.algosome.com/articles/java-custom-serialization.html
+https://www.javamadesoeasy.com/2015/02/customize-serialization-process-by.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+why are using the Serilizatation?
+===================================
+Simply saving your data for use later. 
+
+
+    Simply saving your data for use later. For example, let's say you are writing a video game. Your program will not run forever; even if it never crashes (which is hopefully the case), your user will probably exit the program at some point or the operating system may kill the program to save resources (e.g. on Android, background processes that the user is not interacting with are frequently and intentionally killed by the OS to reclaim system resources like RAM). In order to ensure that the user doesn't start from the very beginning and can instead resume from where they were or from the most recent save point, you will want to write the state of the game to persistent storage (i.e. the hard drive, the user's Google Drive account, etc.). In order to do this, you need to translate the data structures in memory that represent the state of the game to raw bytes that you can write to disk (or to whatever system you are saving the data).
+
+    Retrieving information from a remote server. Let's continue with the game example... suppose you are creating an online multiplayer game or that you want to make it possible to provide new levels or items in the game without the user updating their app. To do this, you would want the information about the online player or the information about the new levels/items to be communicated from a server computer (which you use as the point of contact for all the copies of the app installed on various devices) to the individual copies of the app. Both the server and app need some sort of in-memory representation of these data structures (e.g. the location of other players, the structure of a new level, the description/image for a new item, etc.), but to transfer the information from the server to the app on the device, the communication system consists of raw bytes, and so it is necessary to have a way to convert the data to raw bytes and from raw bytes back to a meaningful in-memory data structure.
+
+Pretty much any communication between two different processes/apps or between an app and some storage system is a case where some sort of serialization mechanism is required.
+
+
+
+3. Difference between Externalizable and Serialization interface (Important)?
+======================================================================
+1. Constructor call during deSerialization
+	
+Constructor is not called during deSerialization.(Serialization)
+	
+Constructor is called during deSerialization.(exter)
+
+2. Methods
+	===
+It is a marker interface it doesn’t have any method.(Serialization)
+	
+It’s not a marker interface.
+It has method’s called writeExternal() and readExternal() (Externalizable).
+
+Question 4. How can you customize Serialization and DeSerialization process when you have implemented Serializable interface (Important)?
+================================================================================================================================
+Here comes the quite challenging question, where you could prove how strong your Serialization concepts are.We can customize Serialization process by defining writeObject()  method & DeSerialization process by defining readObject() method.
+
+Let’s customize Serialization process by defining writeObject()  method :
+
+      private void writeObject(ObjectOutputStream os) {
+           System.out.println("In, writeObject() method.");    
+           try {
+                  os.writeInt(this.id);
+                  os.writeObject(this.name);
+           } catch (Exception e) {
+                  e.printStackTrace();
+           }
+    } 
+We have serialized id and name manually by writing them in file.
+   
+Let’s customize DeSerialization process by defining readObject()  method :
+
+    private void readObject(ObjectInputStream ois) {
+           System.out.println("In, readObject() method.");
+           try {
+                  id=ois.readInt();
+                  name=(String)ois.readObject();
+           } catch (Exception e) {
+                  e.printStackTrace();
+           }
+    } 
+We have DeSerialized id and name manually by reading them from file.
+
+
+
+
+Tranasient
+===============
+transient is the modifier applicable only for variables.
+While performing serialization if we don't want to save the value of a particular
+variable to meet security constant such type of variable , then we should declare
+that variable with "transient" keyword.
+3. At the time of serialization JVM ignores the original value of transient variable
+and save default value to the file .
+That is transient means "not to serialize".
+
+ How can you avoid certain member variables of class from getting Serialized?
+==========================
+
+Mark member variables as static or transient, and those member variables will no more be a part of Serialization
+
+
+Static Vs Transient :
+=======================
+static variable is not part of object state hence they won't participate in
+serialization because of this declaring a static variable as transient there is no
+use.
+
+Transient Vs Final:
+===================
+
+final variables will be participated into serialization directly by their values.
+Hence declaring a final variable as transient there is no use.
+//the compiler assign the value to final variable
+Example
+
+
+
+
+
+
+Table:
+declaration output
+int i=10;
+int j=20; 10................20
+transient int i=10;
+int j=20; 0................20
+transient int i=10;
+transient static int j=20; 0................20
+transient final int i=10;
+transient int j=20; 10................0
+transient final int i=10;
+transient static int j=20; 10................20
+We can serialize any no of objects to the file but in which order we serialized in the
+same order only we have to deserialize.
+
+
+
+Object graph in serialization:
+===============================
+
+
+Whenever we are serializing an object the set of all objects which are reachable
+from that object will be serialized automatically. This group of objects is nothing
+but object graph in serialization.
+2. In object graph every object should be Serializable otherwise we will get runtime
+exception saying"NotSerializableException".
+Exampl
+
+
+Customized serialization:
+===============================
+During default Serialization there may be a chance of lose of information due to
+transient keyword.(Ex : mango ,money , box).
+
+
+
+import java.io.Serializable;
+
+public class Account implements Serializable {
+	
+	 transient String userName="pavan";
+	 static  final String password="paku";
+	
+
+
+}
+}
+public class CustomizedSerilizationDemo {
+
+	public static void main(String[] args) throws Exception {
+     Account account=new Account();
+     System.out.println(account.userName +"     "+account.password);
+     FileOutputStream fioos=new FileOutputStream("acs.ser");
+      ObjectOutputStream ooos=new ObjectOutputStream(fioos);
+      
+      ooos.writeObject(account);
+
+      FileInputStream fiiis=new FileInputStream("acs.ser");
+      
+      ObjectInputStream ooois=new ObjectInputStream(fiiis);
+       Account account2=(Account) ooois.readObject();
+       System.out.println(account2.userName+"   "+account2.password);
+      
+	}
+
+
+output
+=====
+
+pavan     paku
+null   paku
+But after Deserialization Account object can provide
+only username bur not password. This is due to declaring password as transient.
+Hence doing default serialization there may be a chance of loss of information
+due to transient keyword.
+
+ We can recover this loss of information by using customized serialization.
+
+
+
+We can implements customized serialization by using the following two methods.
+
+===============
+program we are done no usse.
+
+Serialization with respect to inheritance :
+==============================================
+
+If parent class implements Serializable then automatically every child class by default
+implements Serializable. That is Serializable nature is inheriting from parent to child.
+Hence even though child class doesn't implements Serializable , we can serialize child
+class object if parent class implements serializable interface.
+
+
+Externalization : ( 1.1 v )
+1.
+=========================
+
+In default serialization every thing takes care by JVM and programmer doesn't
+have any control.
+2. In serialization total object will be saved always and it is not possible to save part
+of the object , which creates performence problems at certain point.
+3. To overcome these problems we should go for externalization where every thing
+takes care by programmer and JVM doesn't have any control.
+4. The main advantage of externalization over serialization is we can save either
+total object or part of the object based on our requirement.
+5. To provide Externalizable ability for any object compulsory the corresponding
+class should implements externalizable interface.
+6. Externalizable interface is child interface of serializable interface.
+Externalizable interface defines 2 methods :
+1. writeExternal(
+
+serialVersionUID :
+===========================
+
+
+After Serializing object if we change the .class file then we can't perform
+deserialization because of mismatch in serialVersionUID of local class and
+
+serialized object in this case at the time of Deserialization we will get
+RuntimeException saying in "InvalidClassException".
+2. Both sender and receiver should use the same version of JVM if there any
+incompatability in JVM versions then receive anable to deserializable because of
+different serialVersionUID , in this case receiver will get RuntimeException
+saying "InvalidClassException" .
+3. To generate serialVersionUID internally JVM will use complexAlgorithm which
+may create performence problems.
+We can solve above problems by configuring our own serialVersionUID .
+
+
+
+ 1.How can you customize Serialization and DeSerialization process when you have implemented Serializable interface (Important)?
+
+Question 7. What is serialVersionUID?
+======================================
+
+
+ Answer. The serialization at runtime associates with each serializable class a version number, called a serialVersionUID, 
+ which is used during deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to serialization. 
+
+We can use eclipse to generate serialVersionUID for our class (as done in below snapshot)
+
+
+
+
+ Question 8. What will be impact of not defining serialVersionUID in class (Important)?
+=========================================================================================
+Answer.  This is one my favourite question, i am going to discuss it in a very detailed manner. 
+serialVersionUID is used for version control of object.
+
+If we  don’t define serialVersionUID in the class, and any modification is made in class, 
+then we won’t be able to deSerialize our class because serialVersionUID generated by
+ java compiler for modified class will be different from old serialized object. 
+And deserialization process will end up throwing java.io.InvalidClassException  (because of serialVersionUID mismatch) 
+
+Let’s frame another question by twisting few words in it.
+
+If you have serialized a class & then added few fields in it and then deserialize already serialized version of class,
+ how can you ensure that you don’t end up throwing InvalidClassException?
+>Simply we need to define serialVersionUID in class. 
+
+When we Deserialize class ( class which has been modified after Serialization and also class doesn’t
+ declare SerialVersionUID) InvalidClassException is thrown.
+
+When we Deserialize class ( class which has been modified after Serialization and also class declare SerialVersionUID) 
+its gets DeSerialized successfully.
+
+
+
+What is serialVersionUID? Impact of not defining serialVersionUID in class and avoiding InvalidClassException in java
+=======================================================================================================
+ serialVersionUID is used for version control of object.
+If we  don’t define serialVersionUID in the class, and any modification is made in class, 
+then we won’t be able to deSerialize our class because serialVersionUID generated 
+by java compiler for modified class will be different from old serialized object. 
+And deserialization process will end up throwing java.io.InvalidClassException  (because of serialVersionUID mismatch) 
+
+The serialization at runtime associates with each serializable class a version number,
+ called a serialVersionUID, which is used during deserialization to verify that 
+the sender and receiver of a serialized object have loaded classes for that
+ object that are compatible with respect to serialization. 
+
+
+
+
+f you have serialized a class & then added few fields in it and then deserialize 
+already serialized version of class, how can you ensure that you don’t end up throwing InvalidClassException?
+>Simply we need to define serialVersionUID in class. 
+
+When we Deserialize class ( class which has been modified after Serialization and also
+ class doesn’t declare SerialVersionUID) InvalidClassException is thrown.
+
+When we Deserialize class ( class which has been modified after Serialization and also class
+ declare SerialVersionUID) its gets DeSerialized successfully.
+
+
+Let’s discuss this interesting topic in detail with programs-
+
+First we will serialize a class (class which implements Serialization, but we haven’t 
+declared SerialVersionUID)
+
+
+
+We can use eclipse to generate serialVersionUID for our class (as done in below snapshot)
+
+
+
+Program 1 - to Serialize Object (without serialVersionUID)>
+package serDeser4AddSUID;
+ 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+
+/** Copyright (c), AnkitMittal JavaMadeSoEasy.com */
+/*Author : AnkitMittal  Copyright- contents must not be reproduced in any form*/
+class Employee implements Serializable {
+    
+       //we haven’t declared SerialVersionUId  
+    private Integer id;
+    private String name;
+    
+
+    public Employee(Integer id, String name) {
+           this.id = id;
+           this.name = name;
+    }
+ 
+    @Override
+    public String toString() {
+           return "Employee [id=" + id + ", name=" + name + "]";
+    }
+ 
+}
+ 
+public class SerializeEmployee {
+ 
+    public static void main(String[] args) {
+ 
+           Employee object1 = new Employee(1, "amy");
+           Employee object2 = new Employee(2, "ankit");
+ 
+           try {
+                  OutputStream fout = new FileOutputStream("ser.txt");
+                  ObjectOutput oout = new ObjectOutputStream(fout);
+                  System.out.println("Serialization process has started, serializing employee objects...");
+                  oout.writeObject(object1);
+                  oout.writeObject(object2);
+                  fout.close();
+         oout.close();
+                  System.out.println("Object Serialization completed.");
+                  
+           } catch (IOException ioe) {
+                  ioe.printStackTrace();
+           }
+ 
+    }
+ 
+}
+/*OUTPUT
+ 
+Serialization process has started, serializing employee objects...
+Object Serialization completed.
+ 
+ Then modify class by adding one field in class, but ensure that you don’t run the Serialization process again.
+
+
+ Modify the Serialized class (but don’t serialize the class again)>
+========================================================================
+class Employee implements Serializable {
+    
+    private Integer id;
+    private String name;
+    private String addedField;
+ 
+    public Employee(Integer id, String name) {
+           this.id = id;
+           this.name = name;
+    }
+ 
+    @Override
+    public String toString() {
+           return "Employee [id=" + id + ", name=" + name + "]";
+    }
+ 
+}
+
+Now, we have added addedField in class which was already Serialized, let’s see in absence of SerialVersionUID whether we will be able to DeSerialize our class or not.
+
+
+
+
+
+
+
+
+
+
+ Program 2 -  to DeSerialize object - program will throw InvalidClassException>
+package serDeser4AddSUID;
+ 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+ 
+public class DeSerializeEmployee {
+    
+    public static void main(String[] args){
+           try{
+                  InputStream fin=new FileInputStream("ser.txt");
+                  ObjectInput oin=new ObjectInputStream(fin);
+                  
+                  System.out.println("DeSerialization process has started, displaying employee objects...");
+                  Employee emp;
+                  while( (emp=(Employee)oin.readObject())!=null ){
+                        System.out.println(emp);
+                  }
+                  fin.close();
+         oin.close();
+         
+           }catch(IOException | ClassNotFoundException e){
+                  e.printStackTrace();
+           }
+           
+           System.out.println("Object deSerialization completed.");
+           
+           
+    }
+}
+ 
+/*OUTPUT
+ 
+DeSerialization process has started, displaying employee objects...
+java.io.InvalidClassException: serDeser4AddSUID.Employee; local class incompatible: stream classdesc serialVersionUID = 4822384361417160410, local class serialVersionUID = 5590647880449995492
+Object deSerialization completed.
+    at java.io.ObjectStreamClass.initNonProxy(Unknown Source)
+    at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source)
+    at java.io.ObjectInputStream.readClassDesc(Unknown Source)
+    at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source)
+    at java.io.ObjectInputStream.readObject0(Unknown Source)
+    at java.io.ObjectInputStream.readObject(Unknown Source)
+    at serDeser4AddSUID.DeSerializeEmployee.main(DeSerializeEmployee.java:18)
+ 
+*/
+DeSerialization process has ended up throwing InvalidClassException.
+
+
+
+
+
+
+Now, let’s see what will happen when we declare serialVersionUID in Serializable class.
+=========================================================================================
+
+
+Program 3 -  to Serialize Object (with serialVersionUID)>
+package serDeser4AddSUID;
+ 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+/*Author : AnkitMittal  Copyright- contents must not be reproduced in any form*/
+class Employee implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    private Integer id;
+    private String name;
+    
+    public Employee(Integer id, String name) {
+           this.id = id;
+           this.name = name;
+    }
+ 
+    @Override
+    public String toString() {
+           return "Employee [id=" + id + ", name=" + name + "]";
+    }
+ 
+}
+ 
+public class SerializeEmployee {
+ 
+    public static void main(String[] args) {
+ 
+           Employee object1 = new Employee(1, "amy");
+           Employee object2 = new Employee(2, "ankit");
+ 
+           try {
+                  OutputStream fout = new FileOutputStream("ser.txt");
+                  ObjectOutput oout = new ObjectOutputStream(fout);
+                  System.out.println("Serialization process has started, serializing employee objects...");
+                  oout.writeObject(object1);
+                  oout.writeObject(object2);
+                  fout.close();
+         oout.close();
+                  System.out.println("Object Serialization completed.");
+                  
+           } catch (IOException ioe) {
+                  ioe.printStackTrace();
+           }
+ 
+    }
+ 
+}
+/*OUTPUT
+ 
+Serialization process has started, serializing employee objects...
+Object Serialization completed.
+ 
+*/
+
+Then modify class by adding one field in class, but ensure that you don’t run the Serialization process again.
+
+Modify the Serialized class (but don’t serialize the class again)>
+class Employee implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    private Integer id;
+    private String name;
+    private String addedField;
+ 
+    public Employee(Integer id, String name) {
+           this.id = id;
+           this.name = name;
+    }
+ 
+    @Override
+    public String toString() {
+           return "Employee [id=" + id + ", name=" + name + "]";
+    }
+ 
+}
+
+Now, we have added addedField in class which was already Serialized, let’s see in presence of SerialVersionUID whether we will be able to DeSerialize our class or not.
+
+
+
+
+
+
+
+Program 4 -  to DeSerialize object - Object will be DeSerialized successfully (without InvalidClassException) >
+package serDeser4AddSUID;
+ 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+ 
+public class DeSerializeEmployee {
+    
+    public static void main(String[] args){
+           try{
+                  InputStream fin=new FileInputStream("ser.txt");
+                  ObjectInput oin=new ObjectInputStream(fin);
+                  
+                  System.out.println("DeSerialization process has started, displaying employee objects...");
+                  Employee emp;
+                  while( (emp=(Employee)oin.readObject())!=null ){
+                        System.out.println(emp);
+                  }
+                  fin.close();
+         oin.close();
+         
+           }catch(IOException | ClassNotFoundException e){
+                  //e.printStackTrace();
+           }
+           
+           System.out.println("Object deSerialization completed.");
+           
+           
+    }
+}
+ 
+/*OUTPUT
+ 
+DeSerialization process has started, displaying employee objects...
+Employee [id=1, name=amy]
+Employee [id=2, name=ankit]
+Object deSerialization completed.
+ 
+*/
+DeSerialization process has ended up su
+
+
+
+
+ SUMMARY>
+
+Deserialize class ( class has been modified after Serialization and also class doesn’t declare SerialVersionUID)
+>Serialize a class (class which implements Serialization, but don’t declare SerialVersionUID)
+
+>Then modify class by adding one field in class, but ensure that you don’t run the Serialization process again.
+
+>DeSerialization process will end up throwing InvalidClassException.
+
+
+
+Deserialize class ( class has been modified after Serialization and also class declare SerialVersionUID)
+>Now, let’s see what will happen when we declare serialVersionUID in Serializable class.
+
+>Then modify class by adding one field in class, but ensure that you don’t run the Serialization process again.
+
+>DeSerialization process will end successfully.
+
+
+
+
+
+ Question 10. What if Serialization is not available, is any any other alternative way to transfer object over network?
+Answer.
+>We can can convert JSON to transfer the object. JSON is helpful in stringifying and de stringifying object.
+>Hibernate (ORM tool) helps in persisting object as it in database and later we can read persisted object.
+>We can convert object into XML (as done in web services) and transfer object over network.
+
+ Question 13. What will happen if one the member of class does not implement Serializable interface (Important)?
+Answer. This is classy question which will check your in depth knowledge of Serialization concepts. If any of the
+ member does not implement Serializable than  NotSerializableException is thrown. 
+Now, let’s see a program.
+
+
+ Question 15. Is constructor of class called during DeSerialization process?
+Answer. This question which will check your in depth knowledge of Serialization and constructor chaining concepts. 
+It depends on whether our object has implemented Serializable or Externalizable.
+If Serializable has been implemented - constructor is not called during DeSerialization process.
+But, if Externalizable has been implemented - constructor is called during DeSerialization process.
+
+
+
+1.what is the serilization?
+2.what is deserilizaction ?
+3.what is the differnec between both of them ?
+4.How to write custom serilizaction class ?
+5.why we need to go custom serilizaction class ?
+for i have a one class employye class, i want to transfer the data over the network use serilization, 
+so my class is implements from Serilizablr interface .
+
+here i have constractor is there , here some inlization logic is there , Deserialization process does not invoke constructors while creating the object so it can not call the initialization logic provided by the constructor.
+https://www.programmingmitra.com/2019/08/what-is-serialization-everything-about-java-serialization-explained-with-example.html
+
+
+
+6.what is differne betwen serilization and custom serilization?
+7.what is transient keywork ?
+8.where to use ?
+9.what is the different between the static and transient and final ?
+10.Why Serializable is not implemented by Object?
+Now a question arises if Serialization is very basic functionality and any class which do not implement Serializable can not be serialised, then why Serializable is not implemented by the Object itself?,
+ By this way, all our objects could be serialized by default.
+The Object class does not implement Serializable interface because we may not want to serialize all the objects e.g. 
+serialising a thread does not make any sense because thread running in my JVM would be using my system's memory, 
+persisting it and trying to run it in your JVM would make no sense.
